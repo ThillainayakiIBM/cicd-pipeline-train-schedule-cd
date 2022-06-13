@@ -16,7 +16,7 @@ pipeline {
                 withCredentials([usernamepassword(credentialsId:'webserver',usernameVariable:'USERNAME',passwordVariable:'PASSWD')])
                 {
                     sshPublisher(
-                    failonError: ture,
+                    failonError: true,
                     continueonError: false,
                     publishers:[
                             sshPublisherDesc(
