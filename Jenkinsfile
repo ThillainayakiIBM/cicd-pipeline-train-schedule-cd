@@ -13,7 +13,7 @@ pipeline {
                 when {
                 branch 'master'
                 }
-                withCredentials([usernamepassword(credentialsId:'',usernameVariable:'USERNAME',passwordVariable:'PASSWD')])
+                withCredentials([usernamepassword(credentialsId:'webserver',usernameVariable:'USERNAME',passwordVariable:'PASSWD')])
                 {
                     sshPublisher(
                     failonError: ture,
