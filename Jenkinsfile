@@ -40,5 +40,40 @@ pipeline {
                 }
             }
         }
+		stage('deploy to production'){
+             when {
+                branch 'master'
+              }
+			  
+             steps{
+				input('ok to move to prod? please confirm')
+				milestone(1)
+                withCredentials([usernamePassword(credentialsId:'webserver',usernameVariable:'USERNAME',passwordVariable:'PASSWD')])
+                {
+                    sshPublisher(
+                    failOnError: true,
+                    continueOnError: false,
+                    publishers: [
+                            sshPublisherDesc(
+                                configName: 'prod',
+                                sshCredentials: [
+                                    username: "$USERNAME",
+                                    encryptedPassphrase: "$PASSWD"
+                                ], 
+                                transfers:[
+                                    sshTransfer(
+                                    sourceFiles: 'dist/trainSchedule.zip',
+                                    removePrefix: 'dist/',
+                                    remoteDirectory: '/tmp',
+                                    execCommand: 'sudo /usr/bin/systemctl stop train-schedule && rm -rf /opt/train-schedule/* && unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo /usr/bin/systemctl start train-schedule'
+
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
+            }
+        }
     }
 }
