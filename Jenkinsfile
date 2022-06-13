@@ -27,9 +27,9 @@ pipeline {
                                 ], 
                                 transfers:[
                                     sshTransfer(
-                                    sourceFiles: '/dist/trainSchedule.zip'
-                                    removePrefix: 'dist/'
-                                    remoteDirectory: '/tmp'
+                                    sourceFiles: '/dist/trainSchedule.zip',
+                                    removePrefix: 'dist/',
+                                    remoteDirectory: '/tmp',
                                     execCommand: 'sudo /usr/bin/systemctl stop train-schedule && rm -f /opt/trainSchedule/* && unzip /tmp/trainSchedule.zip -d /opt/trainSchedule && sudo /usr/bin/systemctl start train-schedule'
                                     )
                                 ]
