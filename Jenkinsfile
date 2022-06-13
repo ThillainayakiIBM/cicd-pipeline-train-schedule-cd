@@ -8,5 +8,34 @@ pipeline {
                 archiveArtifacts artifacts: 'dist/trainSchedule.zip'
             }
         }
+        stage('deploy to stage'){
+            steps{
+                when {
+                branch 'master'
+                }
+                withCredentials([usernamepassword(credentialsId:'',usernameVariable:'USERNAME',passwordVariable:'PASSWD')])
+                {
+                    sshPublisher(
+                    failonError: ture,
+                    continueonError: false,
+                    publishers:[
+                            sshPublisherDesc(
+                                configName: 'staging',
+                                sshCredentials: [
+                                    username: "$USERNAME",
+                                    encryptedPassphrase: "$PASSWD"
+                                ], 
+                                transfers:[
+                                    sshTransfer(
+                                    sourceFiles: '/dist/trainSchedule.zip'
+                                    removePrefix: '/dist'
+                                    remoteDirectory: '/tmp'
+                                    execCommand: 'sudo /usr/bin/systemctl stop train-schedule && rm -f /opt/trainSchedule/* && unzip /tmp/trainSchedule.zip -d /opt/trainSchedule && sudo /usr/bin/systemctl start train-schedule'
+                                    )
+                                ]
+                    )
+                }
+            }
+        }
     }
 }
